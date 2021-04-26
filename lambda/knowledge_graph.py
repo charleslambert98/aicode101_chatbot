@@ -6,19 +6,30 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import json
 
+# Blocks console warning regarding vectors in a smaller library
 import warnings
 warnings.filterwarnings("ignore", message=r"\[W007\]", category=UserWarning)
 
 #pd.set_option('display.max_colwidth', 200)
 
+# Only one run required of the below code, if already run on EC2 instance, not required
 #nltk.download('stopwords')
 #nltk.download('punkt')
 
+# Handles reading file from EFS
 def read_load_file(file_name):
     text = pd.read_json(file_name)
     
-    load_file(text) # Parameter used to be 'text'
+    load_file(text) 
 
+'''
+Description: Gathers only necessary data for the NLP process, commented section handles stopword 
+removal. WARNING: Stopword removal takes a large amount of time, but only slightly improves 
+accuracy
+
+Parmeters: file_content - Loaded in JSON file
+Returns: data - important data from 'file_content'
+'''
 def load_file(file_content):
     data = []
 
@@ -38,6 +49,12 @@ def load_file(file_content):
 
     return data
 
+'''
+Description: Breaks down each word in the data into appropriate tokenized/vectored forms
+
+Parameters: data - JSON/Dictionary containing step number, description, and title
+Returns: nlp_results - tokenized/vectored 'data'
+'''
 def perform_nlp(data):
     nlp_model = spacy.load("en_core_web_md")
     nlp_results = []
@@ -47,6 +64,16 @@ def perform_nlp(data):
 
     return nlp_results
 
+'''
+Description: Gathers a similarity value between each description/title of each step and provides 
+and appropriate weight based off of the average value of the similarity for the description and 
+the title. Each step will have a similarity factor with another step. The top 2 results will be 
+selected and added to the resultant dictionary. Note: This can be modified to return more results
+by changing the 'while i < 2' section.
+
+Parameters: nlp_data - tokenized/vectored data 
+Returns: results_dict - dictionary containing the step number and it's most similar steps
+'''
 def gather_similarity(nlp_data):
     similar_dict = {}
     avg_desc_similarity = 0
@@ -87,7 +114,17 @@ def gather_similarity(nlp_data):
             i += 1
     
     return results_dict
+"""
+
 '''
+Description: Used to generate a visual of the knowledge graph created from the above processes.
+It is NOT recommended this be used in Lambda. If you wish to use this function, make a copy of this
+code and run it on a local machine.
+
+Parameter: results - dictionary of steps and similarities
+Returns: N/A - displays a plot containing the knowledge graph of the lesson
+'''
+
 def generate_visual(results):
     G = nx.Graph()
 
@@ -102,4 +139,4 @@ def generate_visual(results):
     pos = nx.spring_layout(G, k=0.5)
     nx.draw(G, with_labels=True, node_color='skyblue', node_size=800, edge_cmap=plt.cm.Blues, pos=pos, width=weights)
     plt.show()       
-'''
+"""
