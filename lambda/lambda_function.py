@@ -1,3 +1,4 @@
+# Include the mounted EFS point in the lambda system path for direct access
 import sys
 CURR_PATH = "/mnt/efs"
 sys.path.append(CURR_PATH)
@@ -7,11 +8,11 @@ import logging
 import pandas as pd
 import knowledge_graph as kg
 
+# Provides AWS CloudWatch logging for easy debugging
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-""" Helper Functions: Intent Response Functions """
-
+""" Helper Functions: Intent Response Functions (Direct from AWS Docs)"""
 
 def close(session_attributes, msg, card=None):
     print(card)
@@ -140,7 +141,13 @@ def confirm_intent(session_attributes, intent_name, slots, msg, card=None):
 
 """ Helper Functions: Response Builders """
 
+'''
+Description: This function will take in the necessary content to generate a response card to be 
+packaged with the other intent response parameters
 
+Parameters: Response card components
+Returns: Response card JSON/Dictionary content
+'''
 def build_response_card(title, subtitle, imageUrl, AttachmentLinkUrl, buttons=None):
     choices = []
     if buttons is not None:
@@ -176,7 +183,14 @@ def build_response_card(title, subtitle, imageUrl, AttachmentLinkUrl, buttons=No
         ]
     }
 
+'''
+Description: This function will take in the necessary content to generate multiple response cards
+in the event that the maximum number of buttons is exceeded, requiring a single response card for
+each button instead.
 
+Parameters: Response card components
+Returns: Response card JSON/Dictionary content
+'''
 def build_multiple_response_cards(items):
     cards = []
 
@@ -201,7 +215,14 @@ def build_multiple_response_cards(items):
 
     return response_card
 
+'''
+Description: Handles the retrieval of the lesson the student would like to view. Will elicit user
+desire first via 'Category' then via 'Lesson' unless the lesson name is directly provided or text
+that matches some portion of a lesson is provided.
 
+Parameters: intent_request - The content of the users input
+Returns: Varies between eliciting further information or calling the 'get_lesson_overview' function
+'''
 def get_lesson(intent_request):
     source = intent_request['invocationSource']
     session_attributes = []
@@ -230,7 +251,7 @@ def get_lesson(intent_request):
             session_attributes['stepNumber'] = 0
             slots['lesson'] = session_attributes['projectName']
             
-            return get_lesson_overview(session_attributes, intent_request)
+            return get_lesson_overview(session_attributes)
 
     num_similar = 0
     results = {}
@@ -248,8 +269,13 @@ def get_lesson(intent_request):
 
     return close(session_attributes, "We can't find that project!")
 
+'''
+Description: Will retrieve the JSON file pertaining to the lesson the student wishes to perform.
 
-def get_lesson_overview(session_attributes, intent_request):
+Parameters: session_attributes - Used to store lesson name, step number, and NLP similarity results
+Returns: A response card(s) with the rest of the content of the overview as a 'close' response
+'''
+def get_lesson_overview(session_attributes):
     lesson_name = session_attributes['projectName']
     step_number = int(session_attributes['stepNumber'])
     
@@ -290,7 +316,13 @@ def get_lesson_overview(session_attributes, intent_request):
         title, subtitle, imageUrl, attachmentLinkUrl, buttons)
     return close(session_attributes, msg, card)
 
+'''
+Description: Triggered when a student wishes to move to the next step in the lesson sequentially.
+Will increment the step_number and pull the content from the appropriate lesson's JSON for display.
 
+Parameters: intent_request - contains the session attributes as well as other crucial input information.
+Returns: The response card(s) and content for the next step in the sequence.
+'''
 def get_next_step(intent_request):
     session_attributes = {}
     if intent_request['sessionAttributes']:
@@ -317,7 +349,13 @@ def get_next_step(intent_request):
 
     return close(session_attributes, msg, card)
 
+'''
+Description: Triggered when a student wishes to move to the previous step in the lesson sequentially.
+Will decrement the step_number and pull the content from the appropriate lesson's JSON for display.
 
+Parameters: intent_request - contains the session attributes as well as other crucial input information.
+Returns: The response card(s) and content for the previous step in the sequence.
+'''
 def get_prev_step(intent_request):
     session_attributes = {}
     if intent_request['sessionAttributes']:
@@ -344,7 +382,13 @@ def get_prev_step(intent_request):
 
     return close(session_attributes, msg, card)
 
+'''
+Description: Triggered when a student wishes to move to a specific step in the lesson
+Will change the step_number and pull the content from the appropriate lesson's JSON for display.
 
+Parameters: intent_request - contains the session attributes as well as other crucial input information.
+Returns: The response card(s) and content for the specific step in the lesson.
+'''
 def get_step(intent_request):
     source = intent_request['invocationSource']
     session_attributes = {}
