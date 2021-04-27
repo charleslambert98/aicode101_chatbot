@@ -1,0 +1,250 @@
+{
+  "metadata": {
+    "schemaVersion": "1.0",
+    "importType": "LEX",
+    "importFormat": "JSON"
+  },
+  "resource": {
+    "name": "Tutorbot",
+    "version": "1",
+    "intents": [
+      {
+        "name": "GetStep",
+        "version": "1",
+        "fulfillmentActivity": {
+          "codeHook": {
+            "uri": "arn:aws:lambda:us-east-1:547750889627:function:tutorBot",
+            "messageVersion": "1.0"
+          },
+          "type": "CodeHook"
+        },
+        "sampleUtterances": [
+          "project step {step}",
+          "step {step}",
+          "take me to step {step}",
+          "{step}"
+        ],
+        "slots": [
+          {
+            "sampleUtterances": [],
+            "slotType": "step",
+            "slotTypeVersion": "1",
+            "obfuscationSetting": "NONE",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "e.g. What city?"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "name": "step"
+          }
+        ],
+        "dialogCodeHook": {
+          "uri": "arn:aws:lambda:us-east-1:547750889627:function:tutorBot",
+          "messageVersion": "1.0"
+        }
+      },
+      {
+        "name": "Tutorials",
+        "version": "22",
+        "fulfillmentActivity": {
+          "type": "ReturnIntent"
+        },
+        "sampleUtterances": [
+          "I want to see the lessons",
+          "I want to try tutorials",
+          "tutorials",
+          "lessons",
+          "Take me to the lessons",
+          "Take me to the tutorials",
+          "I want the {lesson} lesson",
+          "I want the {lesson} tutorial"
+        ],
+        "slots": [
+          {
+            "sampleUtterances": [],
+            "slotType": "Lessons",
+            "slotTypeVersion": "2",
+            "obfuscationSetting": "NONE",
+            "slotConstraint": "Optional",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "Which lesson would you like to do?"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "name": "lesson"
+          }
+        ],
+        "dialogCodeHook": {
+          "uri": "arn:aws:lambda:us-east-1:547750889627:function:tutorBot",
+          "messageVersion": "1.0"
+        }
+      },
+      {
+        "name": "Greeting",
+        "version": "17",
+        "fulfillmentActivity": {
+          "type": "ReturnIntent"
+        },
+        "sampleUtterances": [
+          "Hi",
+          "Hello",
+          "Howdy",
+          "What's up",
+          "How are you"
+        ],
+        "slots": [
+          {
+            "sampleUtterances": [],
+            "slotType": "AMAZON.US_FIRST_NAME",
+            "obfuscationSetting": "NONE",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "What is your name?"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "name": "name"
+          }
+        ],
+        "conclusionStatement": {
+          "messages": [
+            {
+              "groupNumber": 1,
+              "contentType": "PlainText",
+              "content": "Hello there {name}, my name is tutorBot!  What would you like to do?"
+            }
+          ]
+        }
+      },
+      {
+        "name": "PrevStep",
+        "version": "1",
+        "fulfillmentActivity": {
+          "codeHook": {
+            "uri": "arn:aws:lambda:us-east-1:547750889627:function:tutorBot",
+            "messageVersion": "1.0"
+          },
+          "type": "CodeHook"
+        },
+        "sampleUtterances": [
+          "previous"
+        ],
+        "slots": []
+      },
+      {
+        "name": "NextStep",
+        "version": "1",
+        "fulfillmentActivity": {
+          "codeHook": {
+            "uri": "arn:aws:lambda:us-east-1:547750889627:function:tutorBot",
+            "messageVersion": "1.0"
+          },
+          "type": "CodeHook"
+        },
+        "sampleUtterances": [
+          "next"
+        ],
+        "slots": []
+      }
+    ],
+    "slotTypes": [
+      {
+        "description": "Different available lessons",
+        "name": "Lessons",
+        "version": "2",
+        "enumerationValues": [
+          {
+            "value": "python-fundamentals"
+          },
+          {
+            "value": "python-turtle"
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      },
+      {
+        "description": "Project step numbers",
+        "name": "step",
+        "version": "1",
+        "enumerationValues": [
+          {
+            "value": "1"
+          },
+          {
+            "value": "2"
+          },
+          {
+            "value": "3"
+          },
+          {
+            "value": "4"
+          },
+          {
+            "value": "5"
+          },
+          {
+            "value": "6"
+          },
+          {
+            "value": "7"
+          },
+          {
+            "value": "8"
+          },
+          {
+            "value": "9"
+          },
+          {
+            "value": "30"
+          },
+          {
+            "value": "20"
+          },
+          {
+            "value": "10"
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      }
+    ],
+    "voiceId": "Joanna",
+    "childDirected": true,
+    "locale": "en-US",
+    "idleSessionTTLInSeconds": 300,
+    "clarificationPrompt": {
+      "messages": [
+        {
+          "contentType": "PlainText",
+          "content": "Sorry, can you please repeat that?"
+        }
+      ],
+      "maxAttempts": 5
+    },
+    "abortStatement": {
+      "messages": [
+        {
+          "contentType": "PlainText",
+          "content": "Sorry, I could not understand. Goodbye."
+        }
+      ]
+    },
+    "detectSentiment": false,
+    "enableModelImprovements": true
+  }
+}

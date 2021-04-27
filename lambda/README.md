@@ -30,3 +30,10 @@ In order to access the files in the EFS via Lambda, it is required to link Lambd
 ## Security Group Configuration
 
 Security groups are required in Lambda to provide credentials to the service it wishes to access. It is important to create a security group with the `AWSLambdaVPCAccessExecutionRole` which will provide Lambda with the necessary permission to access the EC2 instance which grants access to the EFS mount point.
+
+## Expansion/Improvement
+The current lambda code functions well, but has room for improvement. A few ways it can be improved are as follows:
+- Decreased speed of NLP/similarity computation
+- More dynamic parsing of user input
+    - "Did you mean..."
+    - Typo consideration

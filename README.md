@@ -15,3 +15,14 @@ Below are general notes or key points that do not fit in a single category but a
 - With regard to the EC2/EFS setup, setting up the EFS **first** will allow for automatic security group generation and mounting to the EC2 instance during instance setup.
 - Make sure to have an access point created in the EFS for access to the filesystem from Lambda
 - Be sure to have the access point mounted and setup in Lambda before adding any files to the EFS (via EC2). This will ensure the file location is correct and Lambda reads the location as its "root" location (otherwise environment variables will need to be set and configured to navigate to the appropriate directory).
+- Currently, the **Course Creation Form** generates the lesson content for a lesson
+    - In the image-upload sections, an AWS S3 URL is automatically prepended to the image file name. Since the filesystem has been migrated from S3 to EFS, the prepended URL can be removed as it is all in a "local" filesystem.
+    - The course content generated can be directly uploaded to the mounted EFS folder in the appropriate sections (more in the `EFS` directory).
+
+## General Room for Improvement
+This section details project-wide improvements that could be made in the event that AWS remains as the framework for the chatbot for an extended period of time.
+- Expansion of student interaction with the chatbot
+    - General conversation
+        - Learning about the chatbot itself
+        - Having "human" conversation
+- Faster access across AWS services to decrease lag-time between utterance and response
